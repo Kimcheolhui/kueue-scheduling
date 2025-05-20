@@ -1,0 +1,34 @@
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: gpu-flavor
+spec:
+  nodeLabels:
+    nvidia.com/gpu.product: "Tesla-T4"
+    nvidia.com/gpu.count: "1"
+---
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: gpu-cluster-queue
+spec:
+  namespaceSelector: {} # match all.
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+    flavors:
+    - name: gpu-flavor
+      resources:
+      - name: cpu
+        nominalQuota: 40
+      - name: memory
+        nominalQuota: 160Gi
+      - name: nvidia.com/gpu
+        nominalQuota: 4
+---
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  namespace: research
+  name: user-gpu-queue
+spec:
+  clusterQueue: gpu-cluster-queue

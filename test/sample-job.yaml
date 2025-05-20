@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-job-test-cpu-cluster
+  namespace: research
+  labels:
+    kueue.x-k8s.io/queue-name: user-cpu-queue
+spec:
+  parallelism: 3
+  completions: 2
+  # suspend: true
+  template:
+    spec:
+      containers:
+      - name: dummy-job
+        image: registry.k8s.io/e2e-test-images/agnhost:2.53
+        args: ["entrypoint-tester", "hello", "world"]
+        resources:
+          requests:
+            cpu: 2
+            memory: "2Gi"
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sample-job-test-gpu-cluster
+  namespace: research
+  labels:
+    kueue.x-k8s.io/queue-name: user-gpu-queue
+spec:
+  parallelism: 3
+  completions: 2
+  # suspend: true
+  template:
+    spec:
+      containers:
+      - name: dummy-job
+        image: registry.k8s.io/e2e-test-images/agnhost:2.53
+        args: ["entrypoint-tester", "hello", "world"]
+        resources:
+          requests:
+            cpu: 2
+            memory: "2Gi"
+      restartPolicy: Never

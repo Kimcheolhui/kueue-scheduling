@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  namespace: research
+  annotations:
+    kueue.x-k8s.io/queue-name: user-gpu-queue
+  labels:
+    workload-type: ${WORKLOAD_TYPE} # gpu | light-gpu
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        app: stable-diffusion
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: sd-api
+        image: docker.io/cheolhuikim/sd-api:v0.5
+        args:
+        - "A robot riding a horse"
+        - "${STEPS}"
+        volumeMounts:
+        - name: output-vol
+          mountPath: /output
+        resources:
+          requests:
+            cpu: "4"
+            memory: 6Gi
+            nvidia.com/gpu: 1
+          limits:
+            cpu: "4"
+            memory: 6Gi
+            nvidia.com/gpu: 1
+        env:
+        - name: SD_MODEL
+          value: "/models/stable-diffusion-v1-4"
+        - name: RUN_ENV
+          value: "gpu"
+      volumes:
+      - name: output-vol
+        emptyDir: {}

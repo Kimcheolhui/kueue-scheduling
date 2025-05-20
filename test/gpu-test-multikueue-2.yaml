@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gpu-usage-test
+  namespace: research
+  annotations:
+    kueue.x-k8s.io/queue-name: user-gpu-queue
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: gpu-test
+        image: pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+        command: ["python", "-c"]
+        args:
+          - |
+            import torch
+            print("Using CUDA:", torch.cuda.is_available())
+            a = torch.rand(10000, 10000).cuda()
+            b = torch.mm(a, a)
+            print("Computation done")
+
+            import time
+            time.sleep(30)
+        resources:
+          requests:
+            cpu: "1"
+            memory: 2Gi
+            nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"

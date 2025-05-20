@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gpu-test-job
+  namespace: research
+  annotations:
+    kueue.x-k8s.io/queue-name: user-gpu-queue
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: nvidia-smi
+        image: nvidia/cuda:12.9.0-base-ubuntu22.04
+        command: ["sh", "-c", "nvidia-smi && sleep 60"]
+        resources:
+          requests:
+            cpu: "1"
+            memory: 1Gi
+            nvidia.com/gpu: "1"
+          limits:
+            nvidia.com/gpu: "1"

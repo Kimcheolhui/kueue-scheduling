@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cpu-test-job
+  namespace: research
+  annotations:
+    kueue.x-k8s.io/queue-name: user-cpu-queue
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: cpu-burn
+        image: nixery.dev/shell/stress
+        command: ["stress", "--cpu", "2", "--timeout", "15"]
+        resources:
+          requests:
+            cpu: "2"
+            memory: 512Mi
+          limits:
+            cpu: "2"
+            memory: 512Mi

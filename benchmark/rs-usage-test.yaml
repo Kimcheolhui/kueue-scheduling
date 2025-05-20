@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rs-usage-test
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        app: stable-diffusion
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: sd-api
+          image: docker.io/cheolhuikim/sd-api:v0.5
+          args:
+            - "A robot riding a horse"
+            - "10"
+          volumeMounts:
+            - name: output-vol
+              mountPath: /output
+          env:
+            - name: SD_MODEL
+              value: "/models/stable-diffusion-v1-4"
+            - name: RUN_ENV
+              value: "cpu"
+      volumes:
+        - name: output-vol
+          emptyDir: {}
