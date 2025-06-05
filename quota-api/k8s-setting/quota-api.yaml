@@ -16,7 +16,7 @@ spec:
       serviceAccountName: quota-sa
       containers:
       - name: api
-        image: cheolhuikim/kueue-api:v0.1
+        image: cheolhuikim/quota-api:v1.1
         ports:
         - containerPort: 8000
 ---

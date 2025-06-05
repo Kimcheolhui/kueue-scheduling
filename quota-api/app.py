@@ -52,17 +52,19 @@ def query_clusterqueue(cq_name:str, flavor:str, resource:str):
             "clusterqueue": cq_name,
             "flavor": flavor}
 
-def query_pending(cq_name: str):
+def query_workloads(cq_name: str):
 
     data = get_cq_json(cq_name)
 
     pending = int(data["status"].get("pendingWorkloads", 0))
     reserving = int(data["status"].get("reservingWorkloads", 0))
+    admitted = int(data["status"].get("admittedWorkloads", 0))
 
     return {
         "clusterqueue": cq_name,
         "pendingWorkloads": pending,
         "reservingWorkloads": reserving,
+        "admittedWorkloads": admitted
     }
 
 
@@ -81,11 +83,11 @@ def get_quota():
     except Exception as e:
         return jsonify({"error": str(e)}), 404
 
-@app.route("/pending")
-def get_pending():
+@app.route("/workloads")
+def get_workloads():
     cq = request.args.get("clusterqueue", "gpu-cluster-queue")
     try:
-        return jsonify(query_pending(cq))
+        return jsonify(query_workloads(cq))
     except Exception as e:
         return jsonify({"error": str(e)}), 404
 
