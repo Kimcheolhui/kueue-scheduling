@@ -31,13 +31,13 @@ def available_quota(clusterqueue, flavor, resource):
     return r.json()["available"]
 
 def check_pending(clusterqueue):
-    r = requests.get(f"{QUOTA_API_SVC}/pending",
+    r = requests.get(f"{QUOTA_API_SVC}/workloads",
                      params={"clusterqueue": clusterqueue}, timeout=3)
     r.raise_for_status()
     return r.json()["pendingWorkloads"]
 
 def check_reserving(clusterqueue):
-    r = requests.get(f"{QUOTA_API_SVC}/pending",
+    r = requests.get(f"{QUOTA_API_SVC}/workloads",
                      params={"clusterqueue": clusterqueue}, timeout=3)
     r.raise_for_status()
     return r.json()["reservingWorkloads"]
